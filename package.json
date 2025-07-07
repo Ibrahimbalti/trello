@@ -9,16 +9,26 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^3.10.0",
+    "@liveblocks/client": "^3.1.0",
+    "@liveblocks/core": "^3.1.0",
+    "@liveblocks/node": "^3.1.0",
+    "@liveblocks/react": "^3.1.0",
+    "mongodb": "^6.17.0",
+    "next": "15.3.5",
+    "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.3.5"
+    "react-sortablejs": "^6.1.4",
+    "sortablejs": "^1.15.6",
+    "uniqid": "^5.4.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
