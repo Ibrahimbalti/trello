@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { ReactSortable } from "react-sortablejs";
 // import { useStorage } from "@liveblocks/react";
 import { Card, useMutation, useStorage } from "@/app/liveblocks.config";
 import NewCardForm from "./forms/NewCardForm";
 import { shallow } from "@liveblocks/core";
+import CancelButton from "./CancelButton";
+import { default as ColumnCard } from "@/components/Card";
 
 type ColumnProps = {
   id: number | string;
@@ -12,6 +14,8 @@ type ColumnProps = {
 };
 
 export default function Column({ id, name }: ColumnProps) {
+  const [renameMode, setRenameMode] = useState(false);
+
   const columnCards = useStorage<Card[]>((root) => {
     return root.cards
       .filter((card) => card.columnId === id)
@@ -52,10 +56,56 @@ export default function Column({ id, name }: ColumnProps) {
     []
   );
 
+  function handleRenameSubmit(ev: any) {
+    ev.preventDefault();
+    const input = (ev.target as HTMLFormElement).querySelector("input");
+    if (input) {
+      const newColumnName = input.value;
+      updateColumn(id, newColumnName);
+      setRenameMode(false);
+    }
+  }
+  const deleteColumn = useMutation(({ storage }, id) => {
+    const columns = storage.get("columns");
+    const columnIndex = columns.findIndex((c) => c.toObject().id === id);
+    columns.delete(columnIndex);
+  }, []);
+
   return (
-    <div className="w-72 bg-white shadow-sm rounded-md p-4">
-      <h3 className="text-lg font-semibold mb-2">{name}</h3>
-      {columnCards && columnCards.length > 0 && (
+    <div className="w-48 bg-white shadow-sm rounded-md p-2">
+      {!renameMode && (
+        <div className="flex justify-between">
+          <h3>{name}</h3>
+          <button className="text-gray-300" onClick={() => setRenameMode(true)}>
+            {/* <FontAwesomeIcon icon={faEllipsis} /> */}
+            rename
+          </button>
+        </div>
+      )}
+      {renameMode && (
+        <div className="mb-8">
+          Edit name:
+          <form onSubmit={handleRenameSubmit} className="mb-2">
+            <input
+              className="style_input_field"
+              type="text"
+              defaultValue={name}
+            />
+            <button type="submit" className="w-full mt-2">
+              Save
+            </button>
+          </form>
+          <button
+            onClick={() => deleteColumn(id)}
+            className="bg-red-500 text-white p-2 flex gap-2 w-full items-center rounded-md justify-center"
+          >
+            {/* <FontAwesomeIcon icon={faTrash} /> */}
+            Delete column
+          </button>
+          <CancelButton onClick={() => setRenameMode(false)} />
+        </div>
+      )}
+      {!renameMode && columnCards && (
         <>
           <ReactSortable
             list={columnCards}
@@ -65,17 +115,12 @@ export default function Column({ id, name }: ColumnProps) {
             ghostClass="opacity-40"
           >
             {columnCards.map((card) => (
-              <div
-                key={card.id} // ✅ Unique key here
-                className="border border-gray-200 bg-gray-50 my-2 p-4 rounded-md shadow-sm"
-              >
-                <span>{card.name}</span>
-              </div>
+              <ColumnCard key={card.id} id={card.id} name={card.name} />
             ))}
           </ReactSortable>
         </>
       )}
-      <NewCardForm columnId={id} />
+      {!renameMode && <NewCardForm columnId={id} />}
     </div>
   );
 }

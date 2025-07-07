@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { updateBoard } from "@/app/actions/boardActions";
 export default function Board({ name, id }: any) {
   const [renameMode, setRenameMode] = useState(false);
-  // const router = useRouter();
+  const router = useRouter();
   // const updateMyPresence = useUpdateMyPresence();
 
   // useEffect(() => {
@@ -25,15 +25,15 @@ export default function Board({ name, id }: any) {
   // }, []);
 
   async function handleNameSubmit(ev: FormEvent) {
-    // ev.preventDefault();
-    // const input = (ev.target as HTMLFormElement).querySelector("input");
-    // if (input) {
-    //   const newName = input.value;
-    //   await updateBoard(id, { metadata: { boardName: newName } });
-    //   input.value = "";
-    //   setRenameMode(false);
-    //   router.refresh();
-    // }
+    ev.preventDefault();
+    const input = (ev.target as HTMLFormElement).querySelector("input");
+    if (input) {
+      const newName = input.value;
+      await updateBoard(id, { metadata: { boardName: newName } });
+      input.value = "";
+      setRenameMode(false);
+      router.refresh();
+    }
   }
 
   return (
